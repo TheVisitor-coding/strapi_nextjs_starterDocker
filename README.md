@@ -36,7 +36,12 @@ A production-ready Docker starter kit for building modern web applications with 
 git clone <your-repo-url>
 cd strapi_nextjs_starterDocker
 cp .env.template .env
-# Edit .env with your settings
+
+# Generate secure secrets for Strapi
+node scripts/generate-secrets.js
+
+# Copy the generated secrets to your .env file
+# Edit .env with your other settings
 ```
 
 ### 2. Start
@@ -85,12 +90,16 @@ Key variables to configure in `.env`:
 ```bash
 PROJECT_SLUG=my-app
 POSTGRES_PASSWORD=your_password
-STRAPI_ADMIN_JWT_SECRET=your_secret
-STRAPI_JWT_SECRET=your_secret
-STRAPI_API_TOKEN_SALT=your_salt
-STRAPI_APP_KEYS=key1,key2
-STRAPI_TRANSFER_TOKEN_SALT=your_salt
+
+# Strapi Security - Generate with: node scripts/generate-secrets.js
+ADMIN_JWT_SECRET=your_admin_jwt_secret
+ENCRYPTION_KEY=your_encryption_key
+API_TOKEN_SALT=your_api_token_salt
+APP_KEYS=key1,key2,key3,key4
+TRANSFER_TOKEN_SALT=your_transfer_token_salt
 ```
+
+> ⚠️ **Important**: Never use the default placeholder values in production. Always generate your own secure secrets with the provided script.
 
 ## 📊 Monitoring
 
@@ -137,6 +146,12 @@ docker-compose --profile monitoring -f docker-compose.prod.yml up -d
 
 ### Common Issues
 ```bash
+# Strapi APP_KEYS error
+# Error: Middleware "strapi::session": App keys are required
+# Solution: Generate and set secure secrets
+node scripts/generate-secrets.js
+# Copy the output to your .env file
+
 # Permission errors
 sudo chown -R $USER:$USER ./apps/
 
