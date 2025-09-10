@@ -209,8 +209,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-strapidb}
     command: >
       sh -c "
-        pg_dump -h postgres -U $${POSTGRES_USER} -d $${POSTGRES_DB} > /backup/backup_$$(date +%Y%m%d_%H%M%S).sql &&
+        set -e
+        echo 'Starting backup...'
+        pg_dump -h postgres -U $${POSTGRES_USER} -d $${POSTGRES_DB} \
+          --no-password --verbose \
+          -f /backup/backup_$$(date +%Y%m%d_%H%M%S).sql
+        echo 'Backup completed'
         find /backup -name 'backup_*.sql' -mtime +${BACKUP_RETENTION_DAYS:-7} -delete
+        echo 'Old backups cleaned'
       "
     networks:
       - app-network
